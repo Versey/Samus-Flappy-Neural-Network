@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/synaptic/1.0.8/synaptic.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+
+
+<head>
+    <meta charset="UTF-8">
+    <title>Mike Leroux - Porfolio</title>
+</head>
+
+<link rel="stylesheet" href="style\style.css">
+
+<body>
+<!-- Navbar (sit on top) -->
+<div class="w3-top">
+    <div class="w3-bar" id="myNavbar">
+        <a class="w3-bar-item w3-button w3-hover-black w3-hide-medium w3-hide-large w3-right" href="javascript:void(0);" onclick="toggleFunction()" title="Toggle Navigation Menu">
+            <i class="fa fa-bars"></i>
+        </a>
+        <a href="#home" class="w3-bar-item w3-button">HOME</a>
+        <a href="#about" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-user"></i> ABOUT</a>
+        <a href="#portfolio" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-th"></i> PORTFOLIO</a>
+        <a href="#contact" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-envelope"></i> CONTACT</a>
+        <a href="#" class="w3-bar-item w3-button w3-hide-small w3-right w3-hover-red">
+            <i class="fa fa-search"></i>
+        </a>
+    </div>
+
+    <!-- Navbar on small screens -->
+    <div id="navDemo" class="w3-bar-block w3-white w3-hide w3-hide-large w3-hide-medium">
+        <a href="#about" class="w3-bar-item w3-button" onclick="toggleFunction()">ABOUT</a>
+        <a href="#portfolio" class="w3-bar-item w3-button" onclick="toggleFunction()">PORTFOLIO</a>
+        <a href="#contact" class="w3-bar-item w3-button" onclick="toggleFunction()">CONTACT</a>
+        <a href="#" class="w3-bar-item w3-button">SEARCH</a>
+    </div>
+</div>
+
+
+<!-- First Parallax Image with Logo Text -->
+<div class="bgimg-1 w3-display-container w3-opacity-min" id="home">
+
+    <div class="w3-display-middle" style="white-space:nowrap;">
+        <span class="w3-center w3-padding-large w3-black w3-xlarge w3-wide w3-animate-opacity"> PORTFOLIO</span>
+    </div>
+
+</div>
+
+<!-- Canvas and container for creatures -->
+
+<div id="creature-cage">
+    <div id = canvas-container> <canvas id = "canvas"></canvas> </div>
+</div>
+
+<!-- Second Parallax Image with Portfolio Text -->
+<div class="bgimg-2 w3-display-container w3-opacity-min">
+    <div class="w3-display-middle">
+    </div>
+</div>
+
+<!-- Modal for full size images on click-->
+<div id="modal01" class="w3-modal w3-black" onclick="this.style.display='none'">
+    <span class="w3-button w3-large w3-black w3-display-topright" title="Close Modal Image"><i class="fa fa-remove"></i></span>
+    <div class="w3-modal-content w3-animate-zoom w3-center w3-transparent w3-padding-64">
+        <img id="img01" class="w3-image">
+        <p id="caption" class="w3-opacity w3-large"></p>
+    </div>
+</div>
+
+
+<!-- Footer -->
+<footer class="w3-center w3-black w3-padding-64 w3-opacity w3-hover-opacity-on">
+    <a href="#home" class="w3-button w3-light-grey"><i class="fa fa-arrow-up w3-margin-right"></i>Return</a>
+    <div class="w3-xlarge w3-section"></div>
+</footer>
+
+
+<script>
+    var { Architect } = synaptic;
+
+    function Creature (world, x, y) {
+        this.network = new Architect.Perceptron(40, 25, 3);
+        this.world = world;
+        this.mass = .3;
+        this.maxspeed = 2;
+        this.maxforce = .5;
+        this.lookRange = this.mass * 200;
+        this.length = this.mass * 10;
+        this.base = this.length * 0.5;
+        this.HALF_PI = Math.PI * 0.5;
+        this.TWO_PI = Math.PI * 2;
+        this.location = new Vector(x, y);
+        this.velocity = new Vector(0, 0);
+        this.acceleration = new Vector(0, 0);
+        this.color = '#ebae00';
+    }
+
+    Creature.prototype = {
+
+        moveTo: function (networkOutput) {
+            var force = new Vector(0, 0);
+
+            var target = new Vector(networkOutput[0] * this.world.width, networkOutput[1] * this.world.height);
+            var angle = (networkOutput[2] * this.TWO_PI) - Math.PI;
+
+            var separation = this.separate(this.world.creatures);
+            var alignment = this.align(this.world.creatures).setAngle(angle);
+            var cohesion = this.seek(target);
+
+            force.add(separation);
+            force.add(alignment);
+            force.add(cohesion);
+
+            this.applyForce(force);
+        },
+
+        draw: function ()	{
+            this.update();
+
+            var ctx = this.world.context;
+            ctx.lineWidth = 1;
+
+            var angle = this.velocity.angle();
+
+            x1 = this.location.x + Math.cos(angle) * this.base;
+            y1 = this.location.y + Math.sin(angle) * this.base;
+
+            x2 = this.location.x + Math.cos(angle + this.HALF_PI) * this.base;
+            y2 = this.location.y + Math.sin(angle + this.HALF_PI) * this.base;
+
+            x3 = this.location.x + Math.cos(angle - this.HALF_PI) * this.base;
+            y3 = this.location.y + Math.sin(angle - this.HALF_PI) * this.base;
+
+            ctx.lineWidth = 5;
+            ctx.fillStyle = this.color;
+            ctx.strokeStyle = this.color;
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.lineTo(x3, y3);
+            ctx.stroke();
+            ctx.fill();
+        },
+
+        update: function ()	{
+            this.boundaries();
+            this.velocity.add(this.acceleration);
+            this.velocity.limit(this.maxspeed);
+            if (this.velocity.mag() < 1.5)	    	{ this.velocity.setMag(1.5); }
+            this.location.add(this.velocity);
+            this.acceleration.mul(0);
+        },
+
+        applyForce: function (force)	{
+            this.acceleration.add(force);
+        },
+
+        boundaries: function ()	{
+            if (this.location.x < 15) { this.applyForce(new Vector(this.maxforce * 2, 0)); }
+
+            if (this.location.x > this.world.width - 15) { this.applyForce(new Vector(-this.maxforce * 2, 0)); }
+
+            if (this.location.y < 15) { this.applyForce(new Vector(0, this.maxforce * 2)); }
+
+            if (this.location.y > this.world.height - 15) { this.applyForce(new Vector(0, -this.maxforce * 2)); }
+        },
+
+        seek: function (target)	{
+            var seek = target.copy().sub(this.location);
+            seek.normalize();
+            seek.mul(this.maxspeed);
+            seek.sub(this.velocity).limit(0.3);
+
+            return seek;
+        },
+
+        separate: function (neighboors)	{
+            var sum = new Vector(0, 0);
+            var count = 0;
+
+            for (var i in neighboors)		{
+                if (neighboors[i] != this)			{
+                    var d = this.location.dist(neighboors[i].location);
+                    if (d < 24 && d > 0)				{
+                        var diff = this.location.copy().sub(neighboors[i].location);
+                        diff.normalize();
+                        diff.div(d);
+                        sum.add(diff);
+                        count++;
+                    }
+                }
+            }
+            if (!count) { return sum; }
+
+            sum.div(count);
+            sum.normalize();
+            sum.mul(this.maxspeed);
+            sum.sub(this.velocity);
+            sum.limit(this.maxforce);
+
+            return sum.mul(2);
+        },
+
+        align: function (neighboors)	{
+            var sum = new Vector(0, 0);
+            var count = 0;
+            for (var i in neighboors)		{
+                if (neighboors[i] != this)// && !neighboors[i].special)
+                {
+                    sum.add(neighboors[i].velocity);
+                    count++;
+                }
+            }
+            sum.div(count);
+            sum.normalize();
+            sum.mul(this.maxspeed);
+
+            sum.sub(this.velocity).limit(this.maxspeed);
+
+            return sum.limit(0.1);
+        },
+
+        cohesion: function (neighboors)	{
+            var sum = new Vector(0, 0);
+            var count = 0;
+            for (var i in neighboors)		{
+                if (neighboors[i] != this)// && !neighboors[i].special)
+                {
+                    sum.add(neighboors[i].location);
+                    count++;
+                }
+            }
+            sum.div(count);
+
+            return sum;
+        }
+    };
+
+    function Vector (x, y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    Vector.prototype = {
+        set: function (x, y)	{
+            this.x = x;
+            this.y = y;
+
+            return this;
+        },
+        add: function (v)	{
+            this.x += v.x;
+            this.y += v.y;
+
+            return this;
+        },
+        sub: function (v)	{
+            this.x -= v.x;
+            this.y -= v.y;
+
+            return this;
+        },
+        mul: function (s)	{
+            this.x *= s;
+            this.y *= s;
+
+            return this;
+        },
+        div: function (s)	{
+            !s && console.log('Division by zero!');
+
+            this.x /= s;
+            this.y /= s;
+
+            return this;
+        },
+        mag: function () {
+            return Math.sqrt(this.x * this.x + this.y * this.y);
+        },
+        normalize: function ()	{
+            var mag = this.mag();
+            mag && this.div(mag);
+            return this;
+        },
+        angle: function ()	{
+            return Math.atan2(this.y, this.x);
+        },
+        setMag: function (m)	{
+            var angle = this.angle();
+            this.x = m * Math.cos(angle);
+            this.y = m * Math.sin(angle);
+            return this;
+        },
+        setAngle: function (a)	{
+            var mag = this.mag();
+            this.x = mag * Math.cos(a);
+            this.y = mag * Math.sin(a);
+            return this;
+        },
+        rotate: function (a)	{
+            this.setAngle(this.angle() + a);
+            return this;
+        },
+        limit: function (l)	{
+            var mag = this.mag();
+            if (mag > l) { this.setMag(l); }
+            return this;
+        },
+        angleBetween: function (v)	{
+            return this.angle() - v.angle();
+        },
+        dot: function (v)	{
+            return this.x * v.x + this.y * v.y;
+        },
+        lerp: function (v, amt)	{
+            this.x += (v.x - this.x) * amt;
+            this.y += (v.y - this.y) * amt;
+            return this;
+        },
+        dist: function (v)	{
+            var dx = this.x - v.x;
+            var dy = this.y - v.y;
+            return Math.sqrt(dx * dx + dy * dy);
+        },
+        copy: function ()	{
+            return new Vector(this.x, this.y);
+        },
+        random: function () {
+            this.set(1, 1);
+            this.setAngle(Math.random() * Math.PI * 2);
+            return this;
+        }
+    };
+
+    function blastoff () {
+        var canvas = $('#canvas')[0];
+        var ctx = canvas.getContext('2d');
+
+        var num = 20;
+        var fps = 120;
+
+        canvas.width = $('#canvas-container').width();
+        $(window).resize(function () {
+            var width = $('#canvas-container').width();
+            canvas.width = width;
+            world.width = width;
+        });
+
+        var world = {
+            width: 0,
+            height: 0,
+            creatures: [],
+            width: canvas.width,
+            height: canvas.height,
+            context: ctx
+        };
+
+        // populate
+        for (var i = 0; i < num; i++)	{
+            var x = Math.random() * world.width;
+            var y = Math.random() * world.height;
+
+            world.creatures[i] = new Creature(world, x, y);
+            world.creatures[i].velocity.random();
+        }
+
+        var targetX = function (creature) {
+            var cohesion = creature.cohesion(world.creatures);
+            return cohesion.x / world.width;
+        };
+
+        var targetY = function (creature) {
+            var cohesion = creature.cohesion(world.creatures);
+            return cohesion.y / world.height;
+        };
+
+        var targetAngle = function (creature) {
+            var alignment = creature.align(world.creatures);
+            return (alignment.angle() + Math.PI) / (Math.PI * 2);
+        };
+
+        var loop = function ()	{
+            // fade effect
+            ctx.globalAlpha = 1;
+            ctx.fillStyle = 'darkslategrey'
+            ctx.fillRect(0, 0, world.width, world.height);
+            ctx.globalAlpha = 1;
+
+            // update each creature
+            var creatures = world.creatures;
+            creatures.forEach(function (creature)		{
+                // move
+                var input = [];
+                for (var i in creatures)			{
+                    input.push(creatures[i].location.x);
+                    input.push(creatures[i].location.y);
+                    input.push(creatures[i].velocity.x);
+                    input.push(creatures[i].velocity.y);
+                }
+                var output = creature.network.activate(input);
+                creature.moveTo(output);
+
+                // learn
+                var learningRate = 0.3;
+                var target = [targetX(creature), targetY(creature), targetAngle(creature)];
+                creature.network.propagate(learningRate, target);
+
+                // draw
+                creature.draw();
+            });
+
+            setTimeout(loop, 1000 / fps);
+        };
+
+        // blastoff
+        loop();
+    }
+
+    blastoff();
+
+
+</script>
+
+</body>
+</html>
