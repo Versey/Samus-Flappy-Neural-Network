@@ -520,11 +520,11 @@ Game.prototype.display = function(){
 
 window.onload = function(){
 	var sprites = {
-		samusRun:"./img/samusRun2.png",
-		background:"./img/parallax.png",
-		platform:"./img/platform.png",
-		ground: "./img/ground.png",
-		samusJump: "./img/samusJump.png"
+		samusRun:"img/samusRun2.png",
+		background:"img/parallax.png",
+		platform:"img/platform.png",
+		ground: "img/ground.png",
+		samusJump: "img/samusJump.png"
 	}
 
 	var start = function(){
