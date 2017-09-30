@@ -1,11 +1,12 @@
 body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif;}
+
 body, html {
     height: 100%;
     color: #777;
     line-height: 1.8;
 }
 
-canvas{
+canvas {
     width: 100%;
     height: 100%;
     background-color: darkslategrey;
@@ -13,20 +14,20 @@ canvas{
     border-bottom: 1px;
     border-left: 0px;
     border-right: 0px;
-    border-style:solid;
-    border-color:black;
+    border-style: solid;
+    border-color: black;
+}
 
 #myNavbar{
     background-color: #1e2d4d;
     color: azure;
 }
+
 #flappy{
     margin-top: 40px;
     width: 100%;
     height: 500px;
 }
-
-@font-face { font-family: retganon; src: url('retganon.TTF'); }
 
 #neural-buttons{
     width:50%;
