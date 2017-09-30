@@ -524,7 +524,7 @@ window.onload = function(){
 		background:"./img/parallax.png",
 		platform:"./img/platform.png",
 		ground: "./img/ground.png",
-		samusJump: "./img/samusJump.png"
+		samusJump: "./img/samusRun2.png"
 	}
 
 	var start = function(){
