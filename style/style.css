@@ -18,6 +18,10 @@ canvas {
     border-color: black;
 }
 
+#Game{
+    //width: 100%;
+    //height:50%;
+}
 #myNavbar{
     background-color: #1e2d4d;
     color: azure;
@@ -25,8 +29,6 @@ canvas {
 
 #flappy{
     margin-top: 40px;
-    width: 100%;
-    height: 500px;
 }
 
 #neural-buttons{
@@ -35,29 +37,27 @@ canvas {
     padding-bottom: 10px;
     text-align: center;
 }
-#creature_canvas
-{
-    width: 100%;
-    height: 100%;
+
+button {
+    -webkit-border-radius: 9;
+    -moz-border-radius: 9;
+    border-radius: 9px;
+    -webkit-box-shadow: 0px 0px 5px #666666;
+    -moz-box-shadow: 0px 0px 5px #666666;
+    box-shadow: 0px 0px 5px #666666;
+    font-family: Arial;
+    color: #ffffff;
+    font-size: 22px;
+    background: #1e2d4d;
+    padding: 10px 20px 10px 20px;
+    text-decoration: none;
+    border:none;
+    font-family: "Consolas";
 }
 
-
-button{
-    background: #65656c;
-    border-top: 1px solid #38538c;
-    border-right: 1px solid #1f2d4d;
-    border-bottom: 1px solid #151e33;
-    border-left: 1px solid #1f2d4d;
-    border-radius: 4px;
-    -webkit-box-shadow: inset 0 1px 10px 1px #bcbabe, 0 1px 0 #4c4b4d, 0 6px 0 #505153, 0 8px 4px 1px #111111;
-    box-shadow: inset 0 1px 10px 1px #e1e1ee, 0 1px 0 #4c4d4c, 0 6px 0 #504f53, 0 8px 4px 1px #111111;
-    color: #fff;
-    font: bold 20px/1 "helvetica neue", helvetica, arial, sans-serif;
-    margin-bottom: 10px;
-    padding: 10px 0 12px 0;
-    text-align: center;
-    text-shadow: 0 -1px 1px #1e2d4d;
-    width: 50px;
+button:hover {
+    background: #96d1f5;
+    text-decoration: none;
 }
 
 /* Create a Parallax Effect */
@@ -70,16 +70,11 @@ button{
 
 /* First image (Logo. Full height) */
 .bgimg-1 {
-    background-image: url('http://fullhdpictures.com/wp-content/uploads/2016/01/Gorgeous-Orange-Wallpaper.png');
+    //background-image: url('http://eskipaper.com/images/carbon-fiber-background-1.jpg');
     min-height: 100%;
 }
 
 .w3-wide {letter-spacing: 10px;}
 .w3-hover-opacity {cursor: pointer;}
 
-/* Turn off parallax scrolling for tablets and phones */
-@media only screen and (max-device-width: 1024px) {
-    .bgimg-1, .bgimg-2, .bgimg-3 {
-        background-attachment: scroll;
-    }
 }
